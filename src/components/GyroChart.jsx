@@ -16,7 +16,7 @@ export default function GyroChart() {
   useEffect(() => {
     // 초기 데이터
     supabase
-      .from("gyro_data")
+      .from("sensor_data")
       .select("*")
       .order("created_at", { ascending: true })
       .limit(50)
