@@ -14,22 +14,51 @@ export default function GyroChart() {
   const [gyro, setGyro] = useState([]);
 
   useEffect(() => {
-    // 초기 데이터
+    // ✅ 초기 데이터 (sensor_data)
     supabase
       .from("sensor_data")
-      .select("*")
+      .select("created_at, payload")
       .order("created_at", { ascending: true })
       .limit(50)
-      .then(({ data }) => setGyro(data || []));
+      .then(({ data, error }) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
 
-    // 실시간
+        // 🔥 payload에서 gx/gy/gz 꺼내기
+        const mapped = (data || []).map((row) => ({
+          created_at: row.created_at,
+          gx: row.payload?.gx,
+          gy: row.payload?.gy,
+          gz: row.payload?.gz,
+        }));
+
+        setGyro(mapped);
+      });
+
+    // ✅ 실시간도 sensor_data로 통일
     const channel = supabase
       .channel("gyro-realtime")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "gyro_data" },
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "sensor_data",
+        },
         (payload) => {
-          setGyro((prev) => [...prev.slice(-49), payload.new]);
+          const row = payload.new;
+
+          setGyro((prev) => [
+            ...prev.slice(-49),
+            {
+              created_at: row.created_at,
+              gx: row.payload?.gx,
+              gy: row.payload?.gy,
+              gz: row.payload?.gz,
+            },
+          ]);
         }
       )
       .subscribe();
@@ -40,7 +69,10 @@ export default function GyroChart() {
   return (
     <LineChart width={600} height={300} data={gyro}>
       <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="created_at" tickFormatter={(v) => v.slice(11, 19)} />
+      <XAxis
+        dataKey="created_at"
+        tickFormatter={(v) => v?.slice(11, 19)}
+      />
       <YAxis />
       <Tooltip />
       <Line dataKey="gx" stroke="#ff4d4f" dot={false} />
