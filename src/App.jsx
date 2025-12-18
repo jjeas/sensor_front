@@ -16,7 +16,7 @@ export default function App() {
   useEffect(() => {
     // HiveMQ Cloud WebSocket 연결
     const client = mqtt.connect(
-      "wss://7cdb35e14e60495380d130e6982607e1.s1.eu.hivemq.cloud:8000/mqtt",
+      "wss://7cdb35e14e60495380d130e6982607e1.s1.eu.hivemq.cloud:8884/mqtt",
       {
         username: "jjeas",
         password: "green1234A",
