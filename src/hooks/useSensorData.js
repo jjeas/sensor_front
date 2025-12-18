@@ -23,12 +23,13 @@ export function useSensorData() {
   }, []);
 
   async function load() {
+    console.log("확인!!!")
     const { data } = await supabase
       .from("sensor_data")
       .select("*")
       .order("created_at", { ascending: true })
       .limit(50);
-
+    console.log("data :",data)
     setData(data || []);
   }
 
