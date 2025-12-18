@@ -1,10 +1,10 @@
-import GyroChart from "./components/GyroChart";
+import SensorChart from "./components/SensorChart";
 
 function App() {
   return (
-    <div>
-      <h2>📊 Gyro Realtime Dashboard</h2>
-      <GyroChart />
+    <div style={{ padding: 20 }}>
+      <h2>📡 MPU6050 Realtime Chart</h2>
+      <SensorChart />
     </div>
   );
 }
